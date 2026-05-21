@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qays Ali — DevOps & Cloud</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: rgba(255,255,255,0.07);
+    --accent: #4fffb0;
+    --accent2: #7b8cff;
+    --text: #f0f0f5;
+    --muted: #6b6b80;
+    --tag-bg: rgba(79,255,176,0.08);
+    --tag-border: rgba(79,255,176,0.2);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* glow blobs */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .blob1 { width: 500px; height: 500px; background: var(--accent); top: -100px; left: -100px; }
+  .blob2 { width: 400px; height: 400px; background: var(--accent2); bottom: 100px; right: -100px; }
+
+  /* nav */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 4rem;
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* sections */
+  section { position: relative; z-index: 1; }
+
+  /* hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 4rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s forwards;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3rem, 8vw, 6rem);
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.35s forwards;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero-bio {
+    max-width: 620px;
+    font-size: 1.05rem;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.5s forwards;
+  }
+  .hero-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.65s forwards;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+    font-weight: 400;
+    border: none;
+  }
+  .btn-primary:hover { background: #3de89a; transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* about */
+  .about {
+    padding: 6rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .about h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 1.5rem;
+  }
+  .about p { color: var(--muted); font-size: 0.95rem; margin-bottom: 1rem; }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+  .stat-label { font-size: 0.78rem; color: var(--muted); }
+
+  /* skills */
+  .skills-section {
+    padding: 6rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .skills-section h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 3rem;
+  }
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .skill-group {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: border-color 0.2s;
+  }
+  .skill-group:hover { border-color: rgba(79,255,176,0.3); }
+  .skill-group-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .tag {
+    background: var(--tag-bg);
+    border: 1px solid var(--tag-border);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+  }
+  .tag.blue {
+    background: rgba(123,140,255,0.08);
+    border-color: rgba(123,140,255,0.2);
+    color: var(--accent2);
+  }
+  .tag.gray {
+    background: rgba(255,255,255,0.04);
+    border-color: var(--border);
+    color: var(--muted);
+  }
+
+  /* projects */
+  .projects-section {
+    padding: 6rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .projects-section h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 3rem;
+  }
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; }
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: border-color 0.2s, transform 0.2s;
+    text-decoration: none;
+    color: inherit;
+  }
+  .project-card:hover { border-color: rgba(79,255,176,0.3); transform: translateY(-2px); }
+  .project-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .project-icon {
+    font-size: 1.5rem;
+    width: 44px; height: 44px;
+    background: var(--surface2);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .project-arrow { color: var(--muted); font-size: 1.2rem; transition: color 0.2s; }
+  .project-card:hover .project-arrow { color: var(--accent); }
+  .project-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+  .project-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+  .project-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: auto; }
+
+  /* certifications */
+  .certs-section {
+    padding: 6rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .certs-section h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 3rem;
+  }
+  .certs-list { display: flex; flex-direction: column; gap: 0.75rem; }
+  .cert-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    transition: border-color 0.2s;
+  }
+  .cert-item:hover { border-color: rgba(123,140,255,0.4); }
+  .cert-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .cert-dot.done { background: var(--accent); }
+  .cert-dot.progress { background: var(--accent2); }
+  .cert-dot.planned { background: var(--muted); }
+  .cert-name { font-size: 0.95rem; font-weight: 500; flex: 1; }
+  .cert-status {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.75rem;
+    border-radius: 3px;
+  }
+  .cert-status.done { background: rgba(79,255,176,0.1); color: var(--accent); }
+  .cert-status.progress { background: rgba(123,140,255,0.1); color: var(--accent2); }
+  .cert-status.planned { background: rgba(255,255,255,0.04); color: var(--muted); }
+
+  /* contact */
+  .contact-section {
+    padding: 6rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .contact-section h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    letter-spacing: -0.03em;
+    margin-bottom: 1rem;
+  }
+  .contact-section h2 span { color: var(--accent); }
+  .contact-section p { color: var(--muted); max-width: 480px; margin: 0 auto 2rem; }
+  .contact-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+
+  /* footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  /* divider */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* mobile */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1.5rem; }
+    .hero, .about, .skills-section, .projects-section, .certs-section, .contact-section { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .about { grid-template-columns: 1fr; gap: 2rem; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<nav>
+  <a href="#" class="nav-logo">QA</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#certs">Certs</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <p class="hero-tag">// Qays Ali · DevOps & Cloud Journey</p>
+  <h1>Building from<br>the <span>ground up.</span></h1>
+  <p class="hero-bio">
+    Cyber Security graduate learning DevOps while staying rooted in IT, cloud, and networking.
+    I work with Azure, Git/GitHub, and automation, and run a full homelab with EVE‑NG and VMware
+    to practice network design, CCNA concepts, and real troubleshooting.
+  </p>
+  <div class="hero-links">
+    <a href="#projects" class="btn btn-primary">View my work</a>
+    <a href="https://linkedin.com/in/qaysali" target="_blank" class="btn btn-ghost">LinkedIn ↗</a>
+    <a href="https://github.com/azimkayz" target="_blank" class="btn btn-ghost">GitHub ↗</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="reveal">
+    <p class="section-label">// 01 · About</p>
+    <h2>Learn deeply.<br>Build practically.</h2>
+    <p>I like understanding systems from the ground up — rebuilding them clean and improving every day. This site is where I document the journey.</p>
+    <p>My focus spans cloud infrastructure, network design, security fundamentals, and the DevOps toolchain. I believe in hands-on learning over theory alone.</p>
+  </div>
+  <div class="stat-grid reveal">
+    <div class="stat-card">
+      <div class="stat-num">2+</div>
+      <div class="stat-label">Years homelab experience</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">EVE‑NG</div>
+      <div class="stat-label">Network simulation lab</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">Azure</div>
+      <div class="stat-label">Cloud platform focus</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">CCNA</div>
+      <div class="stat-label">Level networking study</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SKILLS -->
+<section class="skills-section" id="skills">
+  <p class="section-label reveal">// 02 · Skills</p>
+  <h2 class="reveal">What I work with</h2>
+  <div class="skills-grid">
+    <div class="skill-group reveal">
+      <div class="skill-group-title">Cloud & Infrastructure</div>
+      <div class="tags">
+        <span class="tag">Azure</span>
+        <span class="tag">AWS Fundamentals</span>
+        <span class="tag">Virtual Machines</span>
+        <span class="tag">Networking</span>
+      </div>
+    </div>
+    <div class="skill-group reveal">
+      <div class="skill-group-title">DevOps & Automation</div>
+      <div class="tags">
+        <span class="tag blue">Git</span>
+        <span class="tag blue">GitHub</span>
+        <span class="tag blue">CI/CD</span>
+        <span class="tag blue">Bash</span>
+        <span class="tag blue">Linux</span>
+      </div>
+    </div>
+    <div class="skill-group reveal">
+      <div class="skill-group-title">Networking</div>
+      <div class="tags">
+        <span class="tag">EVE-NG</span>
+        <span class="tag">VMware</span>
+        <span class="tag">CCNA Concepts</span>
+        <span class="tag">TCP/IP</span>
+        <span class="tag">VLANs</span>
+      </div>
+    </div>
+    <div class="skill-group reveal">
+      <div class="skill-group-title">Security & IT Support</div>
+      <div class="tags">
+        <span class="tag gray">Cyber Security</span>
+        <span class="tag gray">IT Troubleshooting</span>
+        <span class="tag gray">Active Directory</span>
+        <span class="tag gray">Help Desk</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROJECTS -->
+<section class="projects-section" id="projects">
+  <p class="section-label reveal">// 03 · Projects</p>
+  <h2 class="reveal">Hands-on work</h2>
+  <div class="projects-grid">
+    <a href="https://github.com/azimkayz" target="_blank" class="project-card reveal">
+      <div class="project-card-top">
+        <div class="project-icon">🔬</div>
+        <span class="project-arrow">↗</span>
+      </div>
+      <div class="project-title">EVE-NG Homelab</div>
+      <div class="project-desc">Full network simulation lab using EVE-NG and VMware. Designing and troubleshooting topologies at CCNA level — VLANs, routing, spanning tree, and more.</div>
+      <div class="project-tags">
+        <span class="tag">EVE-NG</span>
+        <span class="tag">VMware</span>
+        <span class="tag gray">CCNA</span>
+      </div>
+    </a>
+    <a href="https://github.com/azimkayz" target="_blank" class="project-card reveal">
+      <div class="project-card-top">
+        <div class="project-icon">☁️</div>
+        <span class="project-arrow">↗</span>
+      </div>
+      <div class="project-title">Azure Cloud Projects</div>
+      <div class="project-desc">Hands-on Azure labs covering virtual machines, resource groups, networking, and identity management. Documenting each step as I go.</div>
+      <div class="project-tags">
+        <span class="tag">Azure</span>
+        <span class="tag blue">IaC</span>
+        <span class="tag gray">Documentation</span>
+      </div>
+    </a>
+    <a href="https://github.com/azimkayz/my-first-repo" target="_blank" class="project-card reveal">
+      <div class="project-card-top">
+        <div class="project-icon">⚙️</div>
+        <span class="project-arrow">↗</span>
+      </div>
+      <div class="project-title">Git & GitHub Workflow</div>
+      <div class="project-desc">Learning version control from scratch — branching, merging, pull requests, and hosting projects on GitHub Pages.</div>
+      <div class="project-tags">
+        <span class="tag blue">Git</span>
+        <span class="tag blue">GitHub</span>
+        <span class="tag blue">GitHub Pages</span>
+      </div>
+    </a>
+    <a href="https://github.com/azimkayz" target="_blank" class="project-card reveal">
+      <div class="project-card-top">
+        <div class="project-icon">🛡️</div>
+        <span class="project-arrow">↗</span>
+      </div>
+      <div class="project-title">Security & IT Support</div>
+      <div class="project-desc">Applying Cyber Security fundamentals in real environments — Active Directory, system hardening, and IT troubleshooting documentation.</div>
+      <div class="project-tags">
+        <span class="tag gray">Security</span>
+        <span class="tag gray">AD</span>
+        <span class="tag gray">IT Support</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CERTS -->
+<section class="certs-section" id="certs">
+  <p class="section-label reveal">// 04 · Certifications</p>
+  <h2 class="reveal">Learning path</h2>
+  <div class="certs-list">
+    <div class="cert-item reveal">
+      <div class="cert-dot done"></div>
+      <div class="cert-name">BSc Cyber Security</div>
+      <span class="cert-status done">Completed</span>
+    </div>
+    <div class="cert-item reveal">
+      <div class="cert-dot progress"></div>
+      <div class="cert-name">Microsoft AZ-900 — Azure Fundamentals</div>
+      <span class="cert-status progress">In progress</span>
+    </div>
+    <div class="cert-item reveal">
+      <div class="cert-dot progress"></div>
+      <div class="cert-name">AWS Cloud Practitioner</div>
+      <span class="cert-status progress">In progress</span>
+    </div>
+    <div class="cert-item reveal">
+      <div class="cert-dot planned"></div>
+      <div class="cert-name">Cisco CCNA</div>
+      <span class="cert-status planned">Planned</span>
+    </div>
+    <div class="cert-item reveal">
+      <div class="cert-dot planned"></div>
+      <div class="cert-name">CompTIA Linux+ / RHCSA</div>
+      <span class="cert-status planned">Planned</span>
+    </div>
+    <div class="cert-item reveal">
+      <div class="cert-dot planned"></div>
+      <div class="cert-name">Microsoft AZ-104 — Azure Administrator</div>
+      <span class="cert-status planned">Planned</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <p class="section-label reveal" style="text-align:center;">// 05 · Contact</p>
+  <h2 class="reveal">Let's <span>connect.</span></h2>
+  <p class="reveal">Open to opportunities, collaborations, and conversations about cloud, DevOps, and networking.</p>
+  <div class="contact-links reveal">
+    <a href="https://linkedin.com/in/qaysali" target="_blank" class="btn btn-primary">LinkedIn ↗</a>
+    <a href="https://github.com/azimkayz" target="_blank" class="btn btn-ghost">GitHub ↗</a>
+    <a href="mailto:kayzcloud@hotmail.com" class="btn btn-ghost">Email ↗</a>
+  </div>
+</section>
+
+<footer>
+  <span>Qays Ali © 2025</span>
+  <span>Built with Git · Hosted on GitHub Pages</span>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
