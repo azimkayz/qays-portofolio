@@ -1,6 +1,6 @@
 # Qays Portfolio Website
 
-This is my personal portfolio website built using HTML, CSS, and JavaScript.  
+This is my personal portfolio website.  
 I’m learning DevOps, Git, GitHub, Azure, networking, and building homelabs with EVE-NG and VMware Workstation.
 
 ## Features
